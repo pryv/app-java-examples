@@ -109,3 +109,4 @@ build/
 #NDK
 obj/
 java-lib/
+bin
