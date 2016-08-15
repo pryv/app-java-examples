@@ -1,7 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'application'
 
-mainClassName = 'hello.HelloWorld'
+mainClassName = 'BasicExample'
 
 repositories {
     mavenCentral()
@@ -10,9 +10,4 @@ repositories {
 
 dependencies {
     compile 'com.pryv:java:1.0.0'
-}
-
-jar {
-    baseName = 'gs-gradle'
-    version =  '0.1.0'
 }
