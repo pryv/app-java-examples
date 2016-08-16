@@ -12,6 +12,10 @@ The basic example shows how to authenticate a user and fetches a few Events.
 
 This app offers a simple GUI to load and display Pryv data.
 
+### Backup app
+
+Simple Java program that allows to backup one's Pryv data locally to CSV format.
+
 ## Usage
 
 *Prerequisites:* Gradle
