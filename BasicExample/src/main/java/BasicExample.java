@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,13 +27,13 @@ import com.pryv.utils.Logger;
  */
 public class BasicExample implements AuthView, GetEventsCallback, GetStreamsCallback {
 
-  private List<Event> events;
-  private Map<String, Stream> streams;
+  private List<Event> events = new ArrayList<Event>();
+  private Map<String, Stream> streams = new HashMap<String,Stream>();
   private Connection connection;
 
   public static void main(String[] args) {
 
-    // turn off logging
+    // Turn off logging
     Logger logger = Logger.getInstance();
     logger.turnOff();
 
@@ -77,6 +78,9 @@ public class BasicExample implements AuthView, GetEventsCallback, GetStreamsCall
         System.out.println(message);
       }
     });
+    
+    // Configure cache scope
+    connection. setupCacheScope(new Filter());
 
     // Retrieve the Streams structure
     connection.streams.get(null, this);
