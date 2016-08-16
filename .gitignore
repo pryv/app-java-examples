@@ -110,3 +110,4 @@ build/
 obj/
 java-lib/
 bin
+cache/
