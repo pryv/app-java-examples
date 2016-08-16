@@ -1,18 +1,20 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import com.pryv.Connection;
 import com.pryv.Filter;
-import com.pryv.api.EventsCallback;
+import com.pryv.Pryv;
 import com.pryv.auth.AuthBrowserView;
 import com.pryv.auth.AuthController;
 import com.pryv.auth.AuthView;
 import com.pryv.database.DBinitCallback;
-import com.pryv.interfaces.StreamsCallback;
+import com.pryv.interfaces.GetEventsCallback;
+import com.pryv.interfaces.GetStreamsCallback;
 import com.pryv.model.Event;
 import com.pryv.model.Permission;
 import com.pryv.model.Stream;
 import com.pryv.utils.Logger;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This example lets the user sign in, then retrieves the access information
@@ -22,10 +24,11 @@ import java.util.Map;
  * @author ik
  *
  */
-public class BasicExample implements AuthView, EventsCallback, StreamsCallback {
+public class BasicExample implements AuthView, GetEventsCallback, GetStreamsCallback {
 
   private List<Event> events;
   private Map<String, Stream> streams;
+  private Connection connection;
 
   public static void main(String[] args) {
 
@@ -49,8 +52,7 @@ public class BasicExample implements AuthView, EventsCallback, StreamsCallback {
     permissions.add(diaryPermission);
     permissions.add(positionPermission);
 
-    AuthController authenticator =
-      new AuthControllerImpl(reqAppId, permissions, language, returnURL, exampleUser);
+    AuthController authenticator = new AuthController(reqAppId, permissions, language, returnURL, exampleUser);
 
     // start authentication. On successful authentication, the Streams structure
     // as well as 20 Events will be retrieved from the API (defined on the
@@ -60,7 +62,7 @@ public class BasicExample implements AuthView, EventsCallback, StreamsCallback {
   }
 
   @Override
-  public void displayLoginVew(String loginURL) {
+  public void displayLoginView(String loginURL) {
     printExampleMessage(loginURL);
     new AuthBrowserView().displayLoginView(loginURL);
   }
@@ -68,31 +70,21 @@ public class BasicExample implements AuthView, EventsCallback, StreamsCallback {
   @Override
   public void onAuthSuccess(String userID, String accessToken) {
 
-    // instanciate ConnectionOld object - used to access Streams and Events data
-    // (through EventsManager and StreamsManager interfaces)
-    Connection connection = new Connection(userID, accessToken, new DBinitCallback() {
+    // Instantiate Connection object - used to access Streams and Events data
+    connection = new Connection(userID, accessToken, Pryv.DOMAIN, true, new DBinitCallback() {
       @Override
       public void onError(String message) {
         System.out.println(message);
       }
     });
 
-    // assign connection to interfaces
-    eventsManager = connection;
-    streamsManager = connection;
-
-    // Retrieve data
-    // the retrieval produces 3 callback executions: a synchronous callback from
-    // the Supervisors (volatile memory), an asynchronous callback from the
-    // cache database and an asynchronous callback from the online API.
-
     // Retrieve the Streams structure
-    streamsManager.get(null, this);
+    connection.streams.get(null, this);
 
     // Retrieve 20 Events
     Filter eventsFilter = new Filter();
     eventsFilter.setLimit(20);
-    eventsManager.get(eventsFilter, this);
+    connection.events.get(eventsFilter, this);
   }
 
   @Override
@@ -104,56 +96,56 @@ public class BasicExample implements AuthView, EventsCallback, StreamsCallback {
   public void onAuthRefused(int reasonId, String message, String detail) {
     System.out.println("Auth refused");
   }
-
+  
   @Override
-  public void onEventsRetrievalSuccess(Map<String, Event> events, Double serverTime) {
-    System.out.println(events.size() + " Event(s) retrieved:");
-    for (Event event : events.values()) {
-      System.out.println(event);
-    }
-    this.events = events;
+  public void cacheCallback(List<Event> list, Map<String, Double> map) {
+	    System.out.println(list.size() + " Event(s) retrieved from Cache:");
+	    appendEvents(list);
   }
 
   @Override
-  public void onEventsRetrievalError(String errorMessage, Double serverTime) {
-    System.out.println("Error in retrieving events");
+  public void apiCallback(List<Event> list, Map<String, Double> map, Double aDouble) {
+	    System.out.println(list.size() + " Event(s) retrieved from API:");
+	    appendEvents(list);
   }
 
   @Override
-  public void onEventsSuccess(String successMessage, Event event, Integer stoppedId,
-    Double serverTime) {
-    // unused in this example
+  public void cacheCallback(Map<String, Stream> map, Map<String, Double> map1) {
+	    System.out.println(map.size() + " Stream(s) retrieved from Cache:");
+	    appendStreams(map);
   }
 
   @Override
-  public void onEventsError(String errorMessage, Double serverTime) {
-    // unused in this example
+  public void apiCallback(Map<String, Stream> map, Map<String, Double> map1, Double aDouble) {
+	    System.out.println(map.size() + " Stream(s) retrieved from API:");
+	    appendStreams(map);
   }
 
   @Override
-  public void onStreamsRetrievalSuccess(Map<String, Stream> streams, Double serverTime) {
-    System.out.println(streams.size() + " Stream(s) retrieved:");
-    for (Stream stream : streams.values()) {
-      System.out.println(stream);
-    }
-    this.streams = streams;
+  public void onApiError(String s, Double aDouble) {
+	  System.out.println("API error with GET:" + s);
   }
-
+  
   @Override
-  public void onStreamsRetrievalError(String errorMessage, Double serverTime) {
-    System.out.println("Error when retrieving Streams.");
+  public void onCacheError(String s) {
+	  System.out.println("Cache error with GET: " + s);
   }
-
-  @Override
-  public void onStreamsSuccess(String successMessage, Stream stream, Double serverTime) {
-    // unused in this example
+ 
+  
+  private void appendEvents(List<Event> retrievedEvents) {
+	  for (Event event : retrievedEvents) {
+	      System.out.println(event);
+	      this.events.add(event);
+	    }
   }
-
-  @Override
-  public void onStreamError(String errorMessage, Double serverTime) {
-    // unused in this example
+  
+  private void appendStreams(Map<String, Stream> retrievedStreams) {
+	  for (Stream stream : retrievedStreams.values()) {
+	      System.out.println(stream);
+	      this.streams.put(stream.getId(), stream);
+	    }
   }
-
+  
   /**
    * print informative message
    *
