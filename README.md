@@ -1,6 +1,6 @@
 # Apps and simple programs using the Java library
 
-Example scripts and apps using the Java library.
+Example scripts and apps using the [Pryv Java library](https://github.com/pryv/lib-java).
 
 ## Apps
 
