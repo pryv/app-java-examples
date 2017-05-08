@@ -18,4 +18,4 @@ Run `./gradlew.bat` to download the right version of gradle and the required dep
 
 ## Run
 
-In your IDE, select `src/main/java/BasicExample.java` and run it.
+In your IDE, select [`src/main/java/BasicExample.java`](https://github.com/pryv/app-java-examples/blob/master/BasicExample/src/main/java/BasicExample.java) and run it.
