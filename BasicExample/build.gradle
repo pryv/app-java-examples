@@ -10,6 +10,6 @@ repositories {
 
 dependencies {
     dependencies {
-        compile files('./libs/commons-1.0.6.jar')
+        compile 'com.pryv:commons:1.0.7'
     }
 }
