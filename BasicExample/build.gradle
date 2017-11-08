@@ -9,5 +9,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.pryv:java:1.0.5'
+    dependencies {
+        compile 'com.pryv:commons:2.0.0'
+    }
 }

@@ -1,21 +1,19 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.pryv.Connection;
-import com.pryv.Filter;
 import com.pryv.Pryv;
 import com.pryv.auth.AuthBrowserView;
 import com.pryv.auth.AuthController;
 import com.pryv.auth.AuthView;
-import com.pryv.database.DBinitCallback;
-import com.pryv.interfaces.GetEventsCallback;
-import com.pryv.interfaces.GetStreamsCallback;
 import com.pryv.model.Event;
+import com.pryv.model.Filter;
 import com.pryv.model.Permission;
 import com.pryv.model.Stream;
 import com.pryv.utils.Logger;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This example lets the user sign in, then retrieves the access information
@@ -25,7 +23,7 @@ import com.pryv.utils.Logger;
  * @author ik
  *
  */
-public class BasicExample implements AuthView, GetEventsCallback, GetStreamsCallback {
+public class BasicExample implements AuthView {
 
   private List<Event> events = new ArrayList<Event>();
   private Map<String, Stream> streams = new HashMap<String,Stream>();
@@ -72,23 +70,23 @@ public class BasicExample implements AuthView, GetEventsCallback, GetStreamsCall
   public void onAuthSuccess(String userID, String accessToken) {
 
     // Instantiate Connection object - used to access Streams and Events data
-    connection = new Connection(userID, accessToken, Pryv.DOMAIN, true, new DBinitCallback() {
-      @Override
-      public void onError(String message) {
-        System.out.println(message);
-      }
-    });
-    
-    // Configure cache scope
-    connection. setupCacheScope(new Filter());
+    connection = new Connection(userID, accessToken, Pryv.DOMAIN);
 
-    // Retrieve the Streams structure
-    connection.streams.get(null, this);
+    try {
+      // Retrieve the Streams structure
+      Map<String, Stream> streams = connection.streams.get(null);
+      appendStreams(streams);
 
-    // Retrieve 20 Events
-    Filter eventsFilter = new Filter();
-    eventsFilter.setLimit(20);
-    connection.events.get(eventsFilter, this);
+      // Retrieve 20 Events
+      Filter eventsFilter = new Filter();
+      eventsFilter.setLimit(20);
+      List<Event> events = connection.events.get(eventsFilter);
+      appendEvents(events);
+    }
+
+    catch(IOException e) {
+      System.out.println("API error: " + e);
+    }
   }
 
   @Override
@@ -100,41 +98,6 @@ public class BasicExample implements AuthView, GetEventsCallback, GetStreamsCall
   public void onAuthRefused(int reasonId, String message, String detail) {
     System.out.println("Auth refused");
   }
-  
-  @Override
-  public void cacheCallback(List<Event> list, Map<String, Double> map) {
-	    System.out.println(list.size() + " Event(s) retrieved from Cache:");
-	    appendEvents(list);
-  }
-
-  @Override
-  public void apiCallback(List<Event> list, Map<String, Double> map, Double aDouble) {
-	    System.out.println(list.size() + " Event(s) retrieved from API:");
-	    appendEvents(list);
-  }
-
-  @Override
-  public void cacheCallback(Map<String, Stream> map, Map<String, Double> map1) {
-	    System.out.println(map.size() + " Stream(s) retrieved from Cache:");
-	    appendStreams(map);
-  }
-
-  @Override
-  public void apiCallback(Map<String, Stream> map, Map<String, Double> map1, Double aDouble) {
-	    System.out.println(map.size() + " Stream(s) retrieved from API:");
-	    appendStreams(map);
-  }
-
-  @Override
-  public void onApiError(String s, Double aDouble) {
-	  System.out.println("API error with GET:" + s);
-  }
-  
-  @Override
-  public void onCacheError(String s) {
-	  System.out.println("Cache error with GET: " + s);
-  }
- 
   
   private void appendEvents(List<Event> retrievedEvents) {
 	  for (Event event : retrievedEvents) {

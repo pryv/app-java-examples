@@ -11,22 +11,7 @@ The basic example shows how to authenticate a user and fetches a few Events.
 ### JavaFX app
 
 This app offers a simple GUI to load and display Pryv data.
-
-### Backup app
-
-Simple Java program that allows to backup one's Pryv data locally to CSV format.
-
-## Usage
-
-*Prerequisites:* Gradle
-
-Using the Eclipse gradle plugin:
-
-1. Create new gradle project
-
-2. Add the dependency in the build.gradle file
-
-3. Right-click on your project in the Package Explorer and Gradle/Refresh Gradle Project
+Please note that this example uses an old version of the Pryv Java library (0.1.0).
 
 ## License
 
