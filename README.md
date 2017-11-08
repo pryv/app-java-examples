@@ -11,6 +11,7 @@ The basic example shows how to authenticate a user and fetches a few Events.
 ### JavaFX app
 
 This app offers a simple GUI to load and display Pryv data.
+Please note that this example uses an old version of the Pryv Java library (0.1.0).
 
 ## License
 
