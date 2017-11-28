@@ -10,6 +10,6 @@ repositories {
 
 dependencies {
     dependencies {
-        compile 'com.pryv:commons:2.0.0'
+        compile 'com.pryv:commons:2.1.1'
     }
 }

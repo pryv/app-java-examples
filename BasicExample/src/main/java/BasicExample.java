@@ -3,6 +3,7 @@ import com.pryv.Pryv;
 import com.pryv.auth.AuthBrowserView;
 import com.pryv.auth.AuthController;
 import com.pryv.auth.AuthView;
+import com.pryv.exceptions.ApiException;
 import com.pryv.model.Event;
 import com.pryv.model.Filter;
 import com.pryv.model.Permission;
@@ -85,7 +86,11 @@ public class BasicExample implements AuthView {
     }
 
     catch(IOException e) {
-      System.out.println("API error: " + e);
+      System.out.println("IO Exception: " + e);
+    }
+
+    catch (ApiException e) {
+      System.out.println("API Exception: " + e.getMsg());
     }
   }
 
